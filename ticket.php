@@ -24,80 +24,60 @@ $operations = OperationData::getAllProductsBySellId($_GET["id"]);
 $user = $sell->getUser();
 
 
-$pdf = new FPDF($orientation='P',$unit='mm', array(45,350));
+$pdf = new FPDF($orientation='P',$unit='mm', array(55,100));
 $pdf->AddPage();
-$pdf->SetFont('Arial','B',8);    //Letra Arial, negrita (Bold), tam. 20
-//$pdf->setXY(5,0);
-$pdf->setY(2);
+$pdf->SetAutoPageBreak(false);
+$pdf->setMargins(2,2,2);
+
 $pdf->setX(2);
-$pdf->Cell(5,5,strtoupper($title));
-$pdf->SetFont('Arial','B',5);    //Letra Arial, negrita (Bold), tam. 20
+$pdf->SetFont('Arial','',5);
+$pdf->Cell(0,3,"X", 0 , 1, "C");
+$pdf->Cell(0,3,"DOCUMENTO NO FISCAL", 0 , 1, "C");
+$pdf->Ln(3);
+
+
+$pdf->SetFont('Arial','',7);
 $pdf->setX(2);
-$pdf->Cell(5,11,strtoupper($stock->address));
-$pdf->setX(2);
-$pdf->Cell(5,17,"TEL. ".strtoupper($stock->phone));
-$pdf->setX(2);
-$pdf->Cell(5,23,'-------------------------------------------------------------------');
-$pdf->setX(2);
-$pdf->Cell(5,29,'CANT.  ARTICULO       PRECIO               TOTAL');
+$pdf->Cell(0,3,strtoupper($title), 0 , 1, "");
+$pdf->Cell(0,3,"Fecha y Hora: ".strtoupper($sell->created_at), 0 , 1, "");
+$pdf->Cell(0,3,"Venta: ".$sell->id);
+$pdf->Ln(3);
+$pdf->Cell(0,3,'-------------------------------------------------------------', 0 , 1, "");
 
 $total =0;
 $off = 35;
 foreach($operations as $op){
 $product = $op->getProduct();
-$pdf->setX(2);
-$pdf->Cell(5,$off,"$op->q");
-$pdf->setX(6);
-$pdf->Cell(35,$off,  strtoupper(substr($product->name, 0,12)) );
-$pdf->setX(20);
-$pdf->Cell(11,$off,  "$symbol ".number_format($product->price_out,2,".",",") ,0,0,"R");
-$pdf->setX(32);
-$pdf->Cell(11,$off,  "$symbol ".number_format($op->q*$product->price_out,2,".",",") ,0,0,"R");
 
-//    ".."  ".number_format($op->q*$product->price_out,2,".",","));
+
+$pdf->setX(2);
+$pdf->Cell(0,3,"$op->q");
+$pdf->setX(8);
+$pdf->Cell(0,3,strtoupper(substr($product->name, 0,12)));
+$pdf->setX(40);
+$pdf->Cell(0,3,"$symbol ".number_format($op->q*$product->price_out,2,".",","), 0 , 1, "" );
+
+
 $total += $op->q*$product->price_out;
 $off+=6;
 }
-$pdf->setX(2);
-$pdf->Cell(5,$off+6,"SUBTOTAL:  " );
-$pdf->setX(38);
-$pdf->Cell(5,$off+6,"$symbol ".number_format(($total)/(1 + ($iva_val/100) ),2,".",","),0,0,"R");
-$pdf->setX(2);
-$pdf->Cell(5,$off+12,"DESCUENTO: " );
-$pdf->setX(38);
-$pdf->Cell(5,$off+12,"$symbol ".number_format($sell->discount,2,".",","),0,0,"R");
-
-$pdf->setX(2);
-$pdf->Cell(5,$off+18,"IMPUESTO: " );
-$pdf->setX(38);
-$pdf->Cell(5,$off+18,"$symbol ".number_format(( ($total)/(1 + ($iva_val/100) )) *($iva_val/100),2,'.',','),0,0,"R");
 
 
+$pdf->Cell(0,3,'-------------------------------------------------------------', 0 , 1, "");
+$pdf->Ln(1);
 $pdf->setX(2);
-$pdf->Cell(5,$off+5+18,"TOTAL: " );
-$pdf->setX(38);
-$pdf->Cell(5,$off+5+18,"$symbol ".number_format($total,2,".",","),0,0,"R");
-
+$pdf->Cell(0,3,"TOTAL: " );
+$pdf->setX(40);
+$pdf->Cell(0,3,"$symbol ".number_format($total,2,".",","),0,1,"");
 $pdf->setX(2);
-$pdf->Cell(5,$off+5+24,"EFECTIVO: " );
-$pdf->setX(38);
-$pdf->Cell(5,$off+5+24,"$symbol ".number_format($sell->cash,2,".",","),0,0,"R");
-
+$pdf->Cell(0,3,"EFECTIVO: " );
+$pdf->setX(40);
+$pdf->Cell(0,3,"$symbol ".number_format($sell->cash,2,".",","),0,1,"");
 $pdf->setX(2);
-$pdf->Cell(5,$off+5+30,"CAMBIO: " );
-$pdf->setX(38);
-$pdf->Cell(5,$off+5+30,"$symbol ".number_format($sell->cash-($total - ($sell->discount)),2,".",","),0,0,"R");
-
-$pdf->setX(2);
-$pdf->Cell(5,$off+5+36,'-------------------------------------------------------------------');
-$pdf->setX(2);
-$pdf->Cell(5,$off+5+42,"SUCURSAL: ".strtoupper($stock->name));
-$pdf->setX(2);
-$pdf->Cell(5,$off+5+48,"FOLIO: ".$sell->id.' - FECHA: '.$sell->created_at);
-$pdf->setX(2);
-$pdf->Cell(5,$off+5+54,'ATENDIDO POR '.strtoupper($user->name." ".$user->lastname));
-$pdf->setX(2);
-$pdf->Cell(5,$off+5+60,'GRACIAS POR TU COMPRA ');
-
+$pdf->Cell(0,3,"CAMBIO: " );
+$pdf->setX(40);
+$pdf->Cell(0,3,"$symbol ".number_format($sell->cash-($total - ($sell->discount)),2,".",","),0,1,"");
+$pdf->Ln(5);
+$pdf->Cell(0,3,"GRACIAS POR SU COMPRA!",0,1,"C");
 
 $pdf->output();
