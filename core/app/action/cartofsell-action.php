@@ -4,11 +4,11 @@ $iva_name = ConfigurationData::getByPreffix("imp-name")->val;
 $iva_val = ConfigurationData::getByPreffix("imp-val")->val;
 ?>
 <?php if(isset($_SESSION["errors"])):?>
-<h2>Errores</h2>
+<p>Errores</p>
 <p></p>
 <table class="table table-bordered table-hover">
 <tr class="danger">
-	<th>Codigo</th>
+	<!--<th>Codigo</th> -->
 	<th>Producto</th>
 	<th>Mensaje</th>
 </tr>
@@ -16,9 +16,10 @@ $iva_val = ConfigurationData::getByPreffix("imp-val")->val;
 $product = ProductData::getById($error["product_id"]);
 ?>
 <tr class="danger">
-	<td><?php echo $product->id; ?></td>
+	<!--<td><?php echo $product->id; ?></td> -->
 	<td><?php echo $product->name; ?></td>
-	<td><b><?php echo $error["message"]; ?></b></td>
+  <td>No hay sufiente cantidad.. Complete el resto de las ventas e intente vender el producto desde <a>aqui</a></td>
+	<!--<td><b><?php echo $error["message"]; ?></b></td> -->
 </tr>
 
 <?php endforeach; ?>
